@@ -20,7 +20,9 @@ conda install -c bioconda pysam
 You can call scAlleleCount.py from the command line or from the getFastCellAlleleCount() R function. In both cases you need an indexed and sorted bamfile (see bamtools for information on preparing this) and two tables, a table of snps to interogate and a set for barcodes (CB) tags corresponding to cells to count.
 
 ### Calling scAlleleCount.py from the command line
-To call from the commandline you need to prepare a SNPS and a BARCODES file for input. The --help parameter provides more information on in input arguments. 
+To call from the commandline you need to prepare a SNPS and a BARCODES file for input. The --help parameter provides more information on in input arguments. The output will be save in the provided PREFIX (which can be an absolute or relative path) with the suffixes: covmat.mtx, refmat.mtx, altmat.mtx. Mtx files can be read in R with the Matrix::readMM() function.
+
+
 ```{sh}
 user@server:~$ ./scAlleleCount.py --help
 usage: scAlleleCount.py [-h] [-v] --snps SNPS --barcodes BARCODES
@@ -77,7 +79,35 @@ Example SNPS file contents
 10 95096 A G
 ```
 
-
-
 ### Using getFastCellAlleleCount() 
+getFastCellAlleleCount() is a convinience wrapper around scAlleleCount.py. Provided with a barcodes character vector and a dataframe of SNPs, it will generate the intermediate files in a temporary directory, run scAlelleCount.py, read back the output and return it.
 
+Example
+```{r}
+bamFile <- "mybam.chr10.bam"
+snps <- read.table('chr10snps.txt',stringsAsFactors=F)
+cellBarcodes <- read.table('barcodes.txt',stringsAsFactors=F)$V1
+
+> head(snps)
+   V1    V2 V3 V4
+ 1 10 93603  C  T
+ 2 10 93816  C  T
+ 3 10 93945  G  A
+ 4 10 94026  G  A
+ 5 10 94083  C  T
+ 6 10 94545  C  T
+ 
+ > head(cellBarcodes)
+ [1] "AAACATACACCACA-2" "AAACATACACCGAT-2" "AAACATACACCTAG-2" "AAACATACACGGGA-4"
+ [5] "AAACATACAGTCTG-2" "AAACATACCACACA-4"
+
+
+x <- getFastCellAlleleCount(snps, bamFile, cellBarcodes)
+
+> str(x,1)
+ List of 3
+  $ refmat:Formal class 'dgTMatrix' [package "Matrix"] with 6 slots
+  $ altmat:Formal class 'dgTMatrix' [package "Matrix"] with 6 slots
+  $ covmat:Formal class 'dgTMatrix' [package "Matrix"] with 6 slots
+
+```
