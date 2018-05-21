@@ -17,11 +17,10 @@ conda install -c bioconda pysam
 ```
 
 ## Running scAlleleCount.py
-You can call scAlleleCount.py from the command line or from the getFastCellAlleleCount() R function. In both cases you need an indexed and sorted bamfile (see bamtools for information on preparing this) and two tables, a table of snps to interogate and a set for barcodes (CB) tags corresponding to cells to count.
+You can call scAlleleCount.py from the command line or using the getFastCellAlleleCount() R function. In both cases you need an indexed and sorted bamfile (see bamtools for information on preparing this) and two tables, a table of snps to interrogate and a set of barcodes (CB) tags corresponding to cells to count.
 
 ### Calling scAlleleCount.py from the command line
-To call from the commandline you need to prepare a SNPS and a BARCODES file for input. The --help parameter provides more information on in input arguments. The output will be save in the provided PREFIX (which can be an absolute or relative path) with the suffixes: covmat.mtx, refmat.mtx, altmat.mtx. Mtx files can be read in R with the Matrix::readMM() function.
-
+To call scAlleleCount.py from the command line you need to prepare a SNPS and a BARCODES file for input. The --help parameter provides more information on input arguments. The output will be save with the provided PREFIX (which can be an absolute or relative path) appended with the suffixes: covmat.mtx, refmat.mtx, altmat.mtx, for the coverage, reference allele and alternate allele matrices respectively. \*.mtx files can be read in R with the Matrix::readMM() function.
 
 ```{sh}
 user@server:~$ ./scAlleleCount.py --help
@@ -50,7 +49,7 @@ optional arguments:
                         prefix of output files
 ```
 
-Example BARCODES file contents
+Example BARCODES file contents:
 
 ```{sh}
 AAACATACACCACA-2
@@ -65,7 +64,7 @@ AAACATACCGACAT-1
 AAACATACCTCCAC-1
 ```
 
-Example SNPS file contents
+Example SNPS file contents:
 ```{sh}
 10 93603 C T
 10 93816 C T
@@ -80,9 +79,9 @@ Example SNPS file contents
 ```
 
 ### Using getFastCellAlleleCount() 
-getFastCellAlleleCount() is a convinience wrapper around scAlleleCount.py. Provided with a barcodes character vector and a dataframe of SNPs, it will generate the intermediate files in a temporary directory, run scAlelleCount.py, read back the output and return it.
+getFastCellAlleleCount() is a wrapper around scAlleleCount.py. Provided with a barcodes character vector and a dataframe of SNPs, it will generate the intermediate files in a temporary directory, run scAlelleCount.py, read back the output and return it.
 
-Example
+Example Usage
 ```{r}
 bamFile <- "mybam.chr10.bam"
 snps <- read.table('chr10snps.txt',stringsAsFactors=F)
