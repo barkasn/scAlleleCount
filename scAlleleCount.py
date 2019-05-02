@@ -7,7 +7,7 @@ parser.add_argument("-v", "--verbose", help="set verbose mode", action="store_tr
 parser.add_argument("--snps", help="SNPs file, tab separated file with no header and 4 columns: chr, pos (0-indexed), reference base, alternate base",required=True);
 parser.add_argument("--barcodes", help="barcodes file containing only barcodes of interest from the CB tag in the bam file; one barcode per line",required=True);
 parser.add_argument("--output-format", help="output format for resulting tables; mm for Matrix Market, hdf for HDF", default="mm", choices=['mm'], dest="output_format"); # TODO: add hdf
-parser.add_argument("bamfile", help="sorted and indexed bamfile from single cell experiment")
+parser.add_argument("--bamfile", help="sorted and indexed bamfile from single cell experiment")
 parser.add_argument("--max-depth", help="max_depth argument for fileup", type=int, default=99999999, dest="maxdepth")
 parser.add_argument("--output-prefix", help="prefix of output files", default="", dest="prefix")
 args = parser.parse_args()
