@@ -13,6 +13,7 @@ parser.add_argument("--output-prefix", help="prefix of output files", default=""
 parser.add_argument("--min-base-quality", help="minimum base quality", default=0, dest="minbbasequal")
 parser.add_argument("--min-mapping-quality", help="minimum mapping quality", default=0, dest="minmappingquality")
 parser.add_argument("--cell-barcode-tag", help="cellular barcode tag", dest="cellbarcodetag", default="CB")
+parser.add_argument("--adjust-capq-threshold", help="adjust capq threshold", dest="adjustcapqthresbold", default=0)
 args = parser.parse_args()
 
 ## This takes a while, delays help if at the top
@@ -92,7 +93,7 @@ samfile = pysam.AlignmentFile(args.bamfile,"rb")
 
 # do pileups
 i=0;
-for pileupcolumn in samfile.pileup(max_depth=args.maxdepth, min_base_quality=args.minbasequal, min_mapping_quality=args.minmappingquality):
+for pileupcolumn in samfile.pileup(max_depth=args.maxdepth, min_base_quality=args.minbasequal, min_mapping_quality=args.minmappingquality, dest_capq_threshold=args.adjustcapqthreshold):
     i += 1;
     if ( args.verbose and i % 100000 == 0):
         sys.stdout.write('.');
