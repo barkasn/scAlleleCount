@@ -10,6 +10,9 @@ parser.add_argument("--output-format", help="output format for resulting tables;
 parser.add_argument("--bamfile", help="sorted and indexed bamfile from single cell experiment")
 parser.add_argument("--max-depth", help="max_depth argument for fileup", type=int, default=99999999, dest="maxdepth")
 parser.add_argument("--output-prefix", help="prefix of output files", default="", dest="prefix")
+parser.add_argument("--min-base-quality", help="minimum base quality", default=0, dest="minbbasequal")
+parser.add_argument("--min-mapping-quality", help="minimum mapping quality", default=0, dest="minmappingquality")
+parser.add_argument("--cell-barcode-tag", help="cellular barcode tag", dest="cellbarcodetag", default="CB")
 args = parser.parse_args()
 
 ## This takes a while, delays help if at the top
@@ -78,29 +81,6 @@ refarray = scipy.sparse.dok_matrix((ncells,npositions),'uint32')
 altarray = scipy.sparse.dok_matrix((ncells,npositions),'uint32')
 covarray = scipy.sparse.dok_matrix((ncells,npositions),'uint32')
 
-#####################3
-    # cells x positions
-    # ncells = barcodetable.shape[0];
-    # npositions = postable.shape[0];
-    #postable["posindex"]
-    #barcodetable["barcode"]
-# for debug
-
-
-# import pdb; pdb.set_trace()
-
-
-# import csv
-
-# # write it
-# with open('rownames.csv', 'w') as csvfile:
-#     writer = csv.writer(csvfile)
-#     [writer.writerow(r) for r in postable]
-
-# import pdb; pdb.set_trace()
-
-####################
-
 
 # start pileup
 if args.verbose:
@@ -112,7 +92,7 @@ samfile = pysam.AlignmentFile(args.bamfile,"rb")
 
 # do pileups
 i=0;
-for pileupcolumn in samfile.pileup(max_depth=args.maxdepth):
+for pileupcolumn in samfile.pileup(max_depth=args.maxdepth, min_base_quality=args.minbasequal, min_mapping_quality=args.minmappingquality):
     i += 1;
     if ( args.verbose and i % 100000 == 0):
         sys.stdout.write('.');
@@ -125,7 +105,7 @@ for pileupcolumn in samfile.pileup(max_depth=args.maxdepth):
         for pileupread in pileupcolumn.pileups:
             if not pileupread.is_del and not pileupread.is_refskip:
                 try:
-                    cbtagvalue  = pileupread.alignment.get_tag('CB')
+                    cbtagvalue  = pileupread.alignment.get_tag(args.cellbarcodetag)
                     if cbtagvalue in barcode_index:
                         barcodei = barcode_index[cbtagvalue];
                         readbase = pileupread.alignment.query_sequence[pileupread.query_position];
